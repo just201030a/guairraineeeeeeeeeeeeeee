@@ -354,6 +354,30 @@ var SCENARIOS=[
    exp:'Discretion and trust with passenger belongings are foundational. Personally retrieving the bag with care makes the passenger feel genuinely respected and secure.'}
 ];
 
+// ── SEED FAKE ARABIC LEADERBOARD ──
+(function(){
+  var key='ga_lb_v4';
+  try{
+    var ex=JSON.parse(localStorage.getItem(key));
+    if(ex&&ex.length>0)return;
+  }catch(e){}
+  var fake=[
+    {n:'محمد العمري',    s:847,d:'hard',  c:8,sat:100},
+    {n:'فاطمة الزهراني', s:792,d:'hard',  c:8,sat:95},
+    {n:'خالد الشمري',    s:741,d:'hard',  c:7,sat:90},
+    {n:'نورة السعيد',    s:698,d:'medium',c:8,sat:100},
+    {n:'عبدالله القحطاني',s:653,d:'medium',c:7,sat:85},
+    {n:'سارة المطيري',   s:614,d:'medium',c:7,sat:90},
+    {n:'يوسف البلوشي',   s:572,d:'medium',c:6,sat:80},
+    {n:'منى الحربي',     s:531,d:'medium',c:6,sat:85},
+    {n:'طارق العجمي',    s:487,d:'easy',  c:7,sat:90},
+    {n:'ريم الدوسري',    s:452,d:'easy',  c:6,sat:80},
+    {n:'بندر الغامدي',   s:413,d:'easy',  c:6,sat:75},
+    {n:'هند الرشيدي',    s:374,d:'easy',  c:5,sat:70}
+  ];
+  try{localStorage.setItem(key,JSON.stringify(fake));}catch(e){}
+})();
+
 // ── GAME STATE ──
 var G={};
 var tInt=null;
