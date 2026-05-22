@@ -377,6 +377,8 @@ function loadQ(){
   G.timeLeft=TIMERS[diff];
   document.getElementById('prog').style.width=Math.round((G.idx/G.scenarios.length)*100)+'%';
   var L=['A','B','C','D'];
+  // Shuffle choices randomly so correct answer isn't always in same position
+  q.choices=q.choices.slice().sort(function(){return Math.random()-0.5;});
   var chtml=q.choices.map(function(c,i){
     return '<button class="choice" id="ch'+i+'" onclick="answer('+i+','+c.ok+')">'
       +'<span class="choice-letter">'+L[i]+'</span>'+c.t+'</button>';
