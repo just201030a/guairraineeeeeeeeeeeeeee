@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gulf Air – Passenger Experience Mission</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Montserrat:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#b8963e;--gold-light:#d4af5a;--gold-pale:#f0d98c;
+  --navy:#1a2744;--navy-deep:#0d1628;
+  --white:#f8f4ee;--cream:#ede8de;
+  --danger:#c0392b;--success:#1e7a4a;
+  --glow:rgba(184,150,62,0.35);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Montserrat',sans-serif;background:var(--navy-deep);color:var(--white);min-height:100vh;overflow-x:hidden;}
+#stars{position:fixed;inset:0;pointer-events:none;z-index:0;}
+
+/* SCREENS */
+.screen{display:none;position:relative;z-index:1;min-height:100vh;flex-direction:column;align-items:center;justify-content:center;}
+.screen.active{display:flex;}
+
+/* INTRO */
+#intro{padding:2rem;background:radial-gradient(ellipse at 50% 0%,rgba(184,150,62,0.15),transparent 65%);}
+.logo-wrap{margin-bottom:1.4rem;animation:fadeDown .9s ease both;}
+.logo-wrap img{width:280px;max-width:82vw;filter:drop-shadow(0 0 18px rgba(184,150,62,.5));animation:floating 4s ease-in-out infinite;}
+@keyframes floating{0%,100%{transform:translateY(0);}50%{transform:translateY(-10px);}}
+.intro-title{font-size:1.65rem;font-weight:800;text-align:center;margin-bottom:.25rem;animation:fadeUp .9s .25s ease both;}
+.intro-sub{font-size:.8rem;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;margin-bottom:.9rem;animation:fadeUp .9s .35s ease both;}
+.intro-desc{font-size:.88rem;color:var(--cream);text-align:center;max-width:440px;line-height:1.8;margin-bottom:1.4rem;animation:fadeUp .9s .45s ease both;opacity:.85;}
+.name-wrap{width:100%;max-width:340px;margin-bottom:.9rem;animation:fadeUp .9s .5s ease both;}
+.name-input{width:100%;padding:.6rem .95rem;background:rgba(255,255,255,.07);border:1.5px solid rgba(184,150,62,.4);border-radius:10px;color:var(--white);font-family:Montserrat,sans-serif;font-size:.88rem;outline:none;transition:border .2s;}
+.name-input:focus{border-color:var(--gold);}
+.name-input::placeholder{color:rgba(255,255,255,.3);}
+.diff-row{display:flex;gap:.7rem;margin-bottom:1.1rem;animation:fadeUp .9s .6s ease both;}
+.dbtn{padding:.45rem 1.1rem;border:1.5px solid var(--gold);background:transparent;color:var(--gold-light);border-radius:30px;font-family:Montserrat,sans-serif;font-size:.8rem;font-weight:600;cursor:pointer;transition:all .25s;}
+.dbtn.on,.dbtn:hover{background:var(--gold);color:var(--navy-deep);box-shadow:0 0 15px var(--glow);}
+.btn-row{display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;animation:fadeUp .9s .75s ease both;}
+.btn-gold{padding:.8rem 2rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy-deep);border:none;border-radius:50px;font-family:Montserrat,sans-serif;font-size:.95rem;font-weight:800;cursor:pointer;letter-spacing:1px;box-shadow:0 5px 25px var(--glow);transition:all .3s;}
+.btn-gold:hover{transform:translateY(-3px) scale(1.04);box-shadow:0 10px 35px var(--glow);}
+.btn-outline{padding:.6rem 1.5rem;background:transparent;border:2px solid rgba(184,150,62,.5);color:var(--gold-light);border-radius:50px;font-family:Montserrat,sans-serif;font-size:.83rem;font-weight:700;cursor:pointer;transition:all .25s;}
+.btn-outline:hover{background:rgba(184,150,62,.12);border-color:var(--gold);}
+
+/* GAME */
+#game{justify-content:flex-start;padding:0;}
+.hud{position:sticky;top:0;z-index:20;width:100%;background:linear-gradient(180deg,var(--navy-deep) 80%,transparent);padding:.6rem 1rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(184,150,62,.2);}
+.hud img{height:32px;filter:drop-shadow(0 0 5px rgba(184,150,62,.4));}
+.hud-stats{display:flex;gap:.5rem;}
+.pill{display:flex;align-items:center;gap:.28rem;background:rgba(184,150,62,.1);border:1px solid rgba(184,150,62,.3);border-radius:20px;padding:.2rem .6rem;font-size:.76rem;}
+.pill b{color:var(--gold-light);}
+.prog-bar{width:100%;padding:.35rem 1rem;background:rgba(26,39,68,.6);}
+.prog-label{font-size:.58rem;color:var(--gold);letter-spacing:2px;margin-bottom:.18rem;}
+.prog-track{height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold-pale));border-radius:3px;transition:width .5s;box-shadow:0 0 6px var(--gold);width:0%;}
+.prog-stops{display:flex;justify-content:space-between;margin-top:.18rem;font-size:.56rem;color:rgba(255,255,255,.38);}
+.scene{flex:1;width:100%;max-width:740px;margin:0 auto;padding:1rem 1rem 5rem;display:flex;flex-direction:column;gap:.85rem;}
+.phase-tag{display:inline-flex;align-items:center;background:rgba(184,150,62,.14);border:1px solid var(--gold);border-radius:20px;padding:.2rem .8rem;font-size:.7rem;color:var(--gold-light);letter-spacing:2px;align-self:flex-start;animation:fadeIn .4s ease;}
+.card{background:linear-gradient(135deg,rgba(26,39,68,.96),rgba(13,22,40,.96));border:1px solid rgba(184,150,62,.3);border-radius:13px;padding:1.15rem;box-shadow:0 8px 35px rgba(0,0,0,.4);animation:slideIn .45s ease;}
+.pax-row{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.8rem;}
+.pax-emoji{font-size:2.3rem;background:rgba(184,150,62,.1);border:2px solid rgba(184,150,62,.3);border-radius:50%;width:52px;height:52px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.pax-name{font-weight:700;color:var(--gold-light);font-size:.88rem;}
+.pax-seat{font-size:.66rem;color:rgba(255,255,255,.48);}
+.situation{font-size:.92rem;line-height:1.82;color:var(--cream);border-left:3px solid var(--gold);padding-left:.8rem;}
+.timer-wrap{margin-top:.6rem;}
+.timer-label{font-size:.6rem;color:var(--gold);letter-spacing:2px;display:flex;justify-content:space-between;margin-bottom:.2rem;}
+.timer-track{height:4px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden;}
+.timer-fill{height:100%;background:linear-gradient(90deg,var(--success),var(--gold),var(--danger));border-radius:3px;transition:width .1s linear;}
+.choices{display:flex;flex-direction:column;gap:.5rem;animation:fadeUp .45s .15s ease both;}
+.choice{width:100%;padding:.82rem 1.05rem;background:rgba(26,39,68,.72);border:1.5px solid rgba(184,150,62,.22);border-radius:10px;color:var(--white);font-family:Montserrat,sans-serif;font-size:.86rem;text-align:left;cursor:pointer;display:flex;align-items:center;gap:.6rem;transition:all .22s;line-height:1.5;}
+.choice:hover{background:rgba(184,150,62,.14);border-color:var(--gold);transform:translateX(4px);}
+.choice.correct{background:rgba(30,122,74,.3);border-color:#2ecc71;color:#a8f5c8;}
+.choice.wrong{background:rgba(192,57,43,.3);border-color:var(--danger);color:#f5a8a8;animation:shake .4s;}
+.choice-letter{width:24px;height:24px;border-radius:50%;background:rgba(184,150,62,.2);border:1px solid rgba(184,150,62,.4);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.7rem;color:var(--gold-light);flex-shrink:0;}
+
+/* FEEDBACK */
+.overlay{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.72);backdrop-filter:blur(4px);}
+.overlay.show{display:flex;}
+.fb-box{background:linear-gradient(135deg,var(--navy),var(--navy-deep));border-radius:16px;padding:1.6rem;max-width:380px;width:90%;text-align:center;animation:popIn .38s ease;border:1px solid rgba(184,150,62,.3);box-shadow:0 18px 55px rgba(0,0,0,.6);}
+.fb-icon{font-size:2.8rem;margin-bottom:.5rem;}
+.fb-title{font-size:1.2rem;font-weight:800;margin-bottom:.32rem;}
+.fb-title.good{color:#2ecc71;}.fb-title.bad{color:var(--danger);}
+.fb-exp{font-size:.8rem;color:var(--cream);line-height:1.7;margin-bottom:.38rem;opacity:.85;}
+.fb-pts{display:inline-flex;align-items:center;background:rgba(184,150,62,.14);border:1px solid rgba(184,150,62,.3);border-radius:20px;padding:.2rem .85rem;color:var(--gold-light);font-weight:700;margin-bottom:.85rem;font-size:.86rem;}
+.fb-next{padding:.55rem 1.6rem;background:linear-gradient(135deg,var(--gold),var(--gold-light));color:var(--navy-deep);border:none;border-radius:30px;font-family:Montserrat,sans-serif;font-size:.9rem;font-weight:800;cursor:pointer;transition:transform .18s;}
+.fb-next:hover{transform:scale(1.06);}
+
+/* RESULT */
+#result{padding:2rem;text-align:center;}
+#result img{width:190px;margin-bottom:.85rem;filter:drop-shadow(0 0 13px rgba(184,150,62,.42));animation:fadeDown .8s ease;}
+.res-title{font-family:'Playfair Display',serif;font-size:1.85rem;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.25rem;}
+.res-sub{font-size:.85rem;color:var(--cream);margin-bottom:1.3rem;opacity:.8;}
+.ring{width:145px;height:145px;border-radius:50%;background:conic-gradient(var(--gold) var(--p,0deg),rgba(255,255,255,.05) 0deg);display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;position:relative;box-shadow:0 0 35px var(--glow);}
+.ring::before{content:'';position:absolute;inset:11px;border-radius:50%;background:var(--navy-deep);}
+.ring-inner{position:relative;z-index:1;text-align:center;}
+.ring-num{font-size:2rem;font-weight:800;color:var(--gold-light);line-height:1;}
+.ring-lbl{font-size:.6rem;color:var(--cream);opacity:.7;letter-spacing:2px;}
+.rank-badge{display:inline-block;padding:.38rem 1.15rem;border-radius:30px;font-size:.92rem;font-weight:800;margin-bottom:1rem;letter-spacing:1px;}
+.stat-row{display:flex;gap:.65rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.3rem;}
+.stat-card{background:rgba(184,150,62,.08);border:1px solid rgba(184,150,62,.2);border-radius:10px;padding:.6rem .85rem;min-width:82px;text-align:center;}
+.stat-card .sn{font-size:1.35rem;font-weight:800;color:var(--gold-light);}
+.stat-card .sl{font-size:.6rem;color:var(--cream);opacity:.6;letter-spacing:1px;}
+.btn-sm{padding:.62rem 1.5rem;background:transparent;border:2px solid var(--gold);color:var(--gold-light);border-radius:50px;font-family:Montserrat,sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;margin:.32rem;transition:all .22s;}
+.btn-sm:hover{background:rgba(184,150,62,.14);transform:scale(1.03);}
+
+/* LEADERBOARD */
+#lb{padding:2rem;text-align:center;}
+#lb img{width:190px;margin-bottom:.65rem;filter:drop-shadow(0 0 12px rgba(184,150,62,.4));}
+.lb-title{font-family:'Playfair Display',serif;font-size:1.8rem;background:linear-gradient(135deg,var(--gold-pale),var(--gold));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:.22rem;}
+.lb-sub{font-size:.72rem;color:var(--gold-light);letter-spacing:3px;text-transform:uppercase;margin-bottom:1.3rem;}
+.lb-wrap{width:100%;max-width:520px;margin:0 auto 1.3rem;}
+.lb-row{display:flex;align-items:center;gap:.65rem;padding:.62rem .85rem;border-radius:9px;margin-bottom:.32rem;background:rgba(26,39,68,.5);border:1px solid rgba(184,150,62,.14);}
+.lb-row.r1{background:linear-gradient(135deg,rgba(212,175,90,.2),rgba(139,105,20,.1));border-color:var(--gold);}
+.lb-row.r2{border-color:rgba(192,192,192,.3);}
+.lb-row.r3{border-color:rgba(205,127,50,.3);}
+.lb-rank{width:26px;font-size:.95rem;font-weight:800;text-align:center;flex-shrink:0;}
+.lb-name{flex:1;font-weight:600;font-size:.85rem;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lb-diff{font-size:.65rem;color:var(--gold-light);background:rgba(184,150,62,.1);border-radius:10px;padding:.1rem .42rem;flex-shrink:0;}
+.lb-pts{font-weight:800;color:var(--gold-light);font-size:.92rem;min-width:55px;text-align:right;flex-shrink:0;}
+.lb-empty{color:rgba(255,255,255,.38);font-size:.86rem;padding:2rem;}
+.clear-btn{font-size:.7rem;color:rgba(255,255,255,.28);background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:20px;padding:.28rem .75rem;cursor:pointer;margin-top:.4rem;transition:all .2s;}
+.clear-btn:hover{color:var(--danger);border-color:var(--danger);}
+
+/* ANIMATIONS */
+@keyframes fadeDown{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+@keyframes popIn{from{opacity:0;transform:scale(.82);}to{opacity:1;transform:scale(1);}}
+@keyframes shake{0%,100%{transform:translateX(0);}25%{transform:translateX(-5px);}75%{transform:translateX(5px);}}
+@media(max-width:480px){.logo-wrap img{width:220px;}.hud-stats{gap:.3rem;}}
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<!-- INTRO -->
+<div id="intro" class="screen active">
+  <div class="logo-wrap"><img src="gulfairlogo.png" alt="Gulf Air Logo"></div>
+  <div class="intro-title">Passenger Experience Mission</div>
+  <div class="intro-sub">✈ Gulf Air Training Simulator</div>
+  <p class="intro-desc">You are the Chief Cabin Experience Officer on a Gulf Air flight from Bahrain to London. Handle real passenger scenarios, make the right calls, and earn the highest satisfaction score!</p>
+  <div class="name-wrap">
+    <input class="name-input" id="pname" type="text" placeholder="Enter your name (for leaderboard)" maxlength="22">
+  </div>
+  <div class="diff-row">
+    <button class="dbtn" id="d-easy" onclick="setDiff('easy')">Easy 🟢</button>
+    <button class="dbtn on" id="d-medium" onclick="setDiff('medium')">Medium 🟡</button>
+    <button class="dbtn" id="d-hard" onclick="setDiff('hard')">Hard 🔴</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-gold" onclick="startGame()">Start Flight 🛫</button>
+    <button class="btn-outline" onclick="goLB()">🏆 Leaderboard</button>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="hud">
+    <img src="gulfairlogo.png" alt="Gulf Air">
+    <div class="hud-stats">
+      <div class="pill">⭐ <b id="h-score">0</b></div>
+      <div class="pill">❤️ <b id="h-lives">❤️❤️❤️</b></div>
+      <div class="pill">😊 <b id="h-sat">100%</b></div>
+    </div>
+  </div>
+  <div class="prog-bar">
+    <div class="prog-label">✈ FLIGHT — BAH → LONDON HEATHROW</div>
+    <div class="prog-track"><div class="prog-fill" id="prog"></div></div>
+    <div class="prog-stops"><span>🇧🇭 Bahrain</span><span>Takeoff</span><span>Cruise</span><span>Approach</span><span>🇬🇧 London</span></div>
+  </div>
+  <div class="scene" id="scene"></div>
+</div>
+
+<!-- RESULT -->
+<div id="result" class="screen">
+  <img src="gulfairlogo.png" alt="Gulf Air">
+  <div class="res-title" id="r-title">Outstanding Flight!</div>
+  <div class="res-sub" id="r-sub">We have landed safely in London</div>
+  <div class="ring" id="ring"><div class="ring-inner"><div class="ring-num" id="r-score">0</div><div class="ring-lbl">POINTS</div></div></div>
+  <div class="rank-badge" id="r-rank">🥇 Gulf Air Legend</div>
+  <div class="stat-row">
+    <div class="stat-card"><div class="sn" id="r-correct">0</div><div class="sl">CORRECT</div></div>
+    <div class="stat-card"><div class="sn" id="r-sat">0%</div><div class="sl">SATISFACTION</div></div>
+    <div class="stat-card"><div class="sn" id="r-streak">0</div><div class="sl">BEST STREAK</div></div>
+  </div>
+  <button class="btn-gold" onclick="startGame()">Fly Again ✈️</button><br><br>
+  <button class="btn-sm" onclick="show('intro')">Main Menu</button>
+  <button class="btn-sm" onclick="goLB()">🏆 Leaderboard</button>
+</div>
+
+<!-- LEADERBOARD -->
+<div id="lb" class="screen">
+  <img src="gulfairlogo.png" alt="Gulf Air">
+  <div class="lb-title">Hall of Fame</div>
+  <div class="lb-sub">🏆 Gulf Air Simulator — Top Crew</div>
+  <div class="lb-wrap" id="lb-rows"></div>
+  <button class="btn-sm" onclick="show('intro')">← Main Menu</button>
+  <button class="clear-btn" onclick="clearLB()">Clear All Scores</button>
+</div>
+
+<!-- FEEDBACK OVERLAY -->
+<div class="overlay" id="overlay">
+  <div class="fb-box">
+    <div class="fb-icon" id="fb-icon">✅</div>
+    <div class="fb-title" id="fb-title">Excellent!</div>
+    <p class="fb-exp" id="fb-exp"></p>
+    <div class="fb-pts" id="fb-pts">+100 pts</div>
+    <button class="fb-next" onclick="next()">Next →</button>
+  </div>
+</div>
+
+<script>
+// ── STARS ──
+(function(){
+  var cv=document.getElementById('stars'),cx=cv.getContext('2d'),st=[];
+  function rsz(){cv.width=innerWidth;cv.height=innerHeight;}
+  function ini(){st=[];for(var i=0;i<110;i++)st.push({x:Math.random()*innerWidth,y:Math.random()*innerHeight,r:Math.random()*1.4+.3,o:Math.random(),s:Math.random()*.005+.002});}
+  function drw(){cx.clearRect(0,0,cv.width,cv.height);st.forEach(function(s){s.o+=s.s;if(s.o>1||s.o<0)s.s*=-1;cx.beginPath();cx.arc(s.x,s.y,s.r,0,Math.PI*2);cx.fillStyle='rgba(212,175,90,'+s.o*.6+')';cx.fill();});requestAnimationFrame(drw);}
+  window.addEventListener('resize',function(){rsz();ini();});
+  rsz();ini();drw();
+})();
+
+// ── HELPERS ──
+function show(id){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── DIFFICULTY ──
+var diff='medium';
+var TIMERS={easy:45,medium:30,hard:18};
+function setDiff(d){
+  diff=d;
+  ['easy','medium','hard'].forEach(function(x){
+    document.getElementById('d-'+x).classList.remove('on');
+  });
+  document.getElementById('d-'+d).classList.add('on');
+}
+
+// ── LEADERBOARD ──
+var LB_KEY='ga_lb_v4';
+function getLB(){try{return JSON.parse(localStorage.getItem(LB_KEY))||[];}catch(e){return[];}}
+function saveLB(a){try{localStorage.setItem(LB_KEY,JSON.stringify(a));}catch(e){}}
+function addLB(name,score,d,correct,sat){
+  var lb=getLB();
+  lb.push({n:name||'Crew Member',s:score,d:d,c:correct,sat:sat});
+  lb.sort(function(a,b){return b.s-a.s;});
+  saveLB(lb.slice(0,25));
+}
+function clearLB(){
+  if(confirm('Clear all leaderboard scores?')){saveLB([]);renderLB();}
+}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function renderLB(){
+  var lb=getLB();
+  var wrap=document.getElementById('lb-rows');
+  if(!lb.length){wrap.innerHTML='<div class="lb-empty">No scores yet — be the first to fly! ✈️</div>';return;}
+  var medals=['🥇','🥈','🥉'];
+  wrap.innerHTML=lb.map(function(e,i){
+    var cls=i===0?'r1':i===1?'r2':i===2?'r3':'';
+    return '<div class="lb-row '+cls+'">'
+      +'<div class="lb-rank">'+(i<3?medals[i]:'#'+(i+1))+'</div>'
+      +'<div class="lb-name">'+esc(e.n)+'</div>'
+      +'<div class="lb-diff">'+esc(e.d)+'</div>'
+      +'<div class="lb-pts">'+esc(e.s)+' pts</div>'
+      +'</div>';
+  }).join('');
+}
+function goLB(){show('lb');renderLB();}
+
+// ── SCENARIOS ──
+var SCENARIOS=[
+  {phase:'🛫 BOARDING',
+   pax:{name:'Mrs. Al-Farsi',seat:'12A — Economy',em:'👩‍🦳'},
+   sit:'A passenger asks for help — her carry-on bag won\'t fit in the overhead bin, and it contains medication she cannot check in. She looks anxious.',
+   choices:[
+     {t:'Apologise and tell her safety rules prevent you from helping with luggage.',ok:false},
+     {t:'Help her find an alternative overhead space and confirm her medication stays accessible in the cabin.',ok:true},
+     {t:'Ask her to re-pack the bag at the gate before boarding.',ok:false},
+     {t:'Tell her it is not your responsibility.',ok:false}
+   ],
+   exp:'Passengers feel safer when crew take genuine ownership. Helping find a solution and securing her medication reflects Gulf Air\'s authentic care for traveller well-being.'},
+  {phase:'🍽️ MEAL SERVICE',
+   pax:{name:'Mr. Al-Shammari',seat:'5C — Business Class',em:'👨‍💼'},
+   sit:'A Business Class passenger pre-ordered a vegetarian meal, but the system shows no record of it. He appears embarrassed in front of his colleagues.',
+   choices:[
+     {t:'Apologise briefly and offer him a standard meal as a substitute.',ok:false},
+     {t:'Sincerely apologise, search every trolley for a vegetarian option, and offer a complimentary drink as immediate compensation.',ok:true},
+     {t:'Tell him it was his fault for not confirming the booking.',ok:false},
+     {t:'Give him the menu and ask him to choose again without any apology.',ok:false}
+   ],
+   exp:'Acknowledging the error and finding an immediate solution — plus a symbolic gesture — turns a negative experience into a positive one. This is the heart of Falkon service.'},
+  {phase:'👦 UNACCOMPANIED MINOR',
+   pax:{name:'Child, 8 years old',seat:'22B — Unaccompanied',em:'👦'},
+   sit:'A child travelling alone is crying and cannot find his phone to contact his family. Nearby passengers are visibly concerned.',
+   choices:[
+     {t:'Tell him to stay calm in his seat until the flight lands.',ok:false},
+     {t:'Immediately sit beside him, reassure him, use the aircraft system to help reach his family, and give him a fun activity.',ok:true},
+     {t:'Ask a nearby passenger to keep an eye on him while you finish your duties.',ok:false},
+     {t:'Make a PA announcement asking if anyone on board knows the child.',ok:false}
+   ],
+   exp:'Unaccompanied minors are the crew\'s first priority. An immediate, warm response ensures his safety and reassures all passengers — embodying Gulf Air\'s hospitality spirit.'},
+  {phase:'💺 COMFORT',
+   pax:{name:'Dr. Al-Ali',seat:'3A — First Class',em:'👩‍⚕️'},
+   sit:'A First Class passenger complains of severe cold and says she has adjusted the air control three times without result. She appears slightly unwell.',
+   choices:[
+     {t:'Tell her the temperature is uniform for all passengers and cannot be changed.',ok:false},
+     {t:'Immediately bring a warm blanket, sincerely apologise, and report the technical fault to the flight engineer.',ok:true},
+     {t:'Suggest she put on a coat or jacket.',ok:false},
+     {t:'Wait for a fourth complaint before taking any action.',ok:false}
+   ],
+   exp:'First Class passengers expect swift, proactive solutions. A warm blanket immediately plus an engineering report solves the problem on both the short and long term.'},
+  {phase:'🌩️ TURBULENCE',
+   pax:{name:'Elderly Gentleman, 75',seat:'14D',em:'👴'},
+   sit:'The aircraft enters moderate turbulence. An elderly passenger looks very frightened and keeps pressing the call button. Some passengers nearby are laughing at him.',
+   choices:[
+     {t:'Formally tell him turbulence is normal and return to your duties.',ok:false},
+     {t:'Sit beside him, calmly explain what is happening in simple language, and stay close until the air stabilises.',ok:true},
+     {t:'Tell the laughing passengers to be quiet, then leave.',ok:false},
+     {t:'Administer a sedative from the medical kit.',ok:false}
+   ],
+   exp:'Fear of turbulence is completely natural. Sitting with a frightened passenger and providing genuine human connection is what sets Gulf Air apart from other carriers.'},
+  {phase:'🎉 HONEYMOON',
+   pax:{name:'Newlywed Couple',seat:'20A/B',em:'💑'},
+   sit:'You notice from the passenger manifest that a couple is travelling on their honeymoon for the first time. You have some free time and limited resources on board.',
+   choices:[
+     {t:'Do nothing — it is not your duty to celebrate personal occasions.',ok:false},
+     {t:'Surprise them with a handwritten congratulations card and a small dessert, delivered with a warm personal word — privately.',ok:true},
+     {t:'Announce their honeymoon to the entire cabin over the PA.',ok:false},
+     {t:'Wait until disembarkation to congratulate them at the door.',ok:false}
+   ],
+   exp:'Small, direct gestures create unforgettable memories. A warm, private surprise — without embarrassing them publicly — is the soul of Gulf hospitality.'},
+  {phase:'🩺 MEDICAL EMERGENCY',
+   pax:{name:'Passenger in Seat 31C',seat:'31C',em:'🤒'},
+   sit:'A passenger feels severe dizziness and nausea after eating something suspicious before boarding. No doctor has been identified on board yet.',
+   choices:[
+     {t:'Administer medication from the aircraft stock immediately without consultation.',ok:false},
+     {t:'Ask if a doctor is among the passengers, activate the in-flight medical programme, document the case, and brief the captain.',ok:true},
+     {t:'Tell him it is not the aircraft\'s fault and give him a sick bag.',ok:false},
+     {t:'Wait and observe to see if he improves on his own.',ok:false}
+   ],
+   exp:'The in-flight medical protocol is clear: seek a doctor among passengers, use the aviation medical hotline, and brief the captain. Documentation and communication are vital for safety.'},
+  {phase:'🧳 PRE-LANDING',
+   pax:{name:'Business Executive',seat:'8B — Business Class',em:'👩‍💼'},
+   sit:'30 minutes before landing, a passenger realises her hand luggage — containing confidential documents — is at a different row. The fasten seatbelt sign is illuminated.',
+   choices:[
+     {t:'Tell her nothing can be done because the seatbelt sign is on.',ok:false},
+     {t:'Personally and carefully retrieve her bag yourself, ensuring full privacy of contents, and hand it directly to her.',ok:true},
+     {t:'Ask another passenger in that row to bring the bag forward.',ok:false},
+     {t:'Tell her to wait until the aircraft has fully stopped.',ok:false}
+   ],
+   exp:'Discretion and trust with passenger belongings are foundational. Personally retrieving the bag with care makes the passenger feel genuinely respected and secure.'}
+];
+
+// ── GAME STATE ──
+var G={};
+var tInt=null;
+
+function startGame(){
+  G={
+    scenarios:[].concat(SCENARIOS).sort(function(){return Math.random()-.5;}),
+    idx:0,score:0,lives:3,sat:100,correct:0,streak:0,best:0,
+    answered:false,timeLeft:0
+  };
+  updateHUD();
+  show('game');
+  loadQ();
+}
+
+function loadQ(){
+  if(G.idx>=G.scenarios.length){endGame();return;}
+  var q=G.scenarios[G.idx];
+  G.answered=false;
+  clearInterval(tInt);
+  G.timeLeft=TIMERS[diff];
+  document.getElementById('prog').style.width=Math.round((G.idx/G.scenarios.length)*100)+'%';
+  var L=['A','B','C','D'];
+  var chtml=q.choices.map(function(c,i){
+    return '<button class="choice" id="ch'+i+'" onclick="answer('+i+','+c.ok+')">'
+      +'<span class="choice-letter">'+L[i]+'</span>'+c.t+'</button>';
+  }).join('');
+  document.getElementById('scene').innerHTML=
+    '<div class="phase-tag">✈ '+q.phase+'</div>'
+    +'<div class="card">'
+      +'<div class="pax-row">'
+        +'<div class="pax-emoji">'+q.pax.em+'</div>'
+        +'<div><div class="pax-name">'+q.pax.name+'</div>'
+        +'<div class="pax-seat">🪑 '+q.pax.seat+'</div></div>'
+      +'</div>'
+      +'<div class="situation">'+q.sit+'</div>'
+      +'<div class="timer-wrap">'
+        +'<div class="timer-label"><span>⏱ TIME</span><span id="tnum">'+G.timeLeft+'s</span></div>'
+        +'<div class="timer-track"><div class="timer-fill" id="tfill" style="width:100%"></div></div>'
+      +'</div>'
+    +'</div>'
+    +'<div class="choices">'+chtml+'</div>';
+  var tot=G.timeLeft;
+  tInt=setInterval(function(){
+    G.timeLeft--;
+    var el=document.getElementById('tfill');
+    var nm=document.getElementById('tnum');
+    if(el)el.style.width=((G.timeLeft/tot)*100)+'%';
+    if(nm)nm.textContent=G.timeLeft+'s';
+    if(G.timeLeft<=0){clearInterval(tInt);if(!G.answered)timeout();}
+  },1000);
+}
+
+function answer(idx,ok){
+  if(G.answered)return;
+  G.answered=true;
+  clearInterval(tInt);
+  var btn=document.getElementById('ch'+idx);
+  if(!btn)return;
+  if(ok){
+    btn.classList.add('correct');
+    var pts=50+G.streak*10+Math.floor(G.timeLeft*2);
+    G.score+=pts;G.correct++;G.streak++;
+    G.best=Math.max(G.best,G.streak);
+    showFB(true,pts);
+  } else {
+    btn.classList.add('wrong');
+    G.lives=Math.max(0,G.lives-1);
+    G.sat=Math.max(0,G.sat-15);
+    G.streak=0;
+    showFB(false,0);
+    if(G.lives<=0){setTimeout(endGame,2100);return;}
+  }
+  updateHUD();
+}
+
+function timeout(){
+  G.answered=true;
+  G.lives=Math.max(0,G.lives-1);
+  G.sat=Math.max(0,G.sat-10);
+  G.streak=0;
+  updateHUD();
+  document.getElementById('fb-icon').textContent='⏰';
+  document.getElementById('fb-title').textContent="Time's Up!";
+  document.getElementById('fb-title').className='fb-title bad';
+  document.getElementById('fb-exp').textContent="In cabin service, speed of response is essential.";
+  document.getElementById('fb-pts').textContent='-1 life ❤️';
+  document.getElementById('overlay').classList.add('show');
+  if(G.lives<=0){setTimeout(endGame,2100);}
+}
+
+function showFB(ok,pts){
+  var ig=['🌟','✨','🏆','👏','🎯'];
+  var ib=['😬','💡','🔄','📚','⚠️'];
+  var tg=['Excellent! 🎉','Outstanding! 🌟','Correct! ✅','Professional! 🏅'];
+  var tb=['Try Again 💪','Learn From This 📖','You Can Do Better 🔄','Review Protocol 📋'];
+  var q=G.scenarios[G.idx];
+  document.getElementById('fb-icon').textContent=ok?ig[Math.floor(Math.random()*ig.length)]:ib[Math.floor(Math.random()*ib.length)];
+  document.getElementById('fb-title').textContent=ok?tg[Math.floor(Math.random()*tg.length)]:tb[Math.floor(Math.random()*tb.length)];
+  document.getElementById('fb-title').className='fb-title '+(ok?'good':'bad');
+  document.getElementById('fb-exp').textContent=q.exp;
+  document.getElementById('fb-pts').textContent=ok?('+'+pts+' pts'+(G.streak>1?' 🔥 ×'+G.streak:'')):'-1 life ❤️';
+  document.getElementById('overlay').classList.add('show');
+}
+
+function next(){
+  document.getElementById('overlay').classList.remove('show');
+  G.idx++;
+  loadQ();
+}
+
+function updateHUD(){
+  document.getElementById('h-score').textContent=G.score;
+  var h='';for(var i=0;i<G.lives;i++)h+='❤️';if(!h)h='💔';
+  document.getElementById('h-lives').textContent=h;
+  document.getElementById('h-sat').textContent=G.sat+'%';
+}
+
+function endGame(){
+  clearInterval(tInt);
+  document.getElementById('overlay').classList.remove('show');
+  document.getElementById('prog').style.width='100%';
+  var pct=Math.round((G.correct/G.scenarios.length)*100);
+  document.getElementById('ring').style.setProperty('--p',(pct*3.6)+'deg');
+  document.getElementById('r-score').textContent=G.score;
+  document.getElementById('r-correct').textContent=G.correct+'/'+G.scenarios.length;
+  document.getElementById('r-sat').textContent=G.sat+'%';
+  document.getElementById('r-streak').textContent=G.best;
+  var rank,title,sub;
+  if(G.score>=600){rank='🥇 Gulf Air Legend';title='Gulf Air Legend!';sub='Exceptional performance — you are our gold standard';}
+  else if(G.score>=400){rank='🥈 Distinguished Captain';title='Distinguished Captain!';sub='Excellent service worthy of Gulf Air\'s finest';}
+  else if(G.score>=200){rank='🥉 Senior Cabin Crew';title='Senior Cabin Crew!';sub='Good performance with room to grow';}
+  else{rank='🎓 Promising Trainee';title='Keep Training!';sub='You have what it takes — keep learning and flying';}
+  document.getElementById('r-title').textContent=title;
+  document.getElementById('r-sub').textContent=sub;
+  var rb=document.getElementById('r-rank');
+  rb.textContent=rank;
+  rb.style.cssText='';
+  if(G.score>=600){rb.style.background='linear-gradient(135deg,#d4af5a,#8b6914)';rb.style.color='#0d1628';rb.style.padding='.38rem 1.15rem';rb.style.borderRadius='30px';}
+  else if(G.score>=400){rb.style.border='1px solid #d4af5a';rb.style.color='#d4af5a';rb.style.padding='.38rem 1.15rem';rb.style.borderRadius='30px';}
+  else{rb.style.border='1px solid rgba(255,255,255,.2)';rb.style.color='#f8f4ee';rb.style.padding='.38rem 1.15rem';rb.style.borderRadius='30px';}
+  var nm=(document.getElementById('pname').value.trim())||'Crew Member';
+  addLB(nm,G.score,diff,G.correct,G.sat);
+  show('result');
+}
+</script>
+</body>
+</html>
